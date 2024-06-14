@@ -1,6 +1,7 @@
-import java.io.IOException;
+
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.io.*;
 
 public class Main {
   public static void main(String[] args) {
@@ -19,8 +20,26 @@ public class Main {
        clientSocket = serverSocket.accept(); // Wait for connection from client.
       
 
-       clientSocket.getOutputStream().write(
-          "HTTP/1.1 200 OK\r\n\r\n".getBytes());
+       BufferedReader buffReader = new BufferedReader(
+        new InputStreamReader(clientSocket.getInputStream()));
+
+        String start = buffReader.readLine();
+        System.out.println("Received request line: " + start);
+        String requestURL = start.split(" ") [1];
+        System.out.println("Extracted URL: " + requestURL);
+
+        String answer;
+        if (requestURL.equalsIgnoreCase("/")){
+          answer = "HTTP/1.1 200 OK\r\n\r\n";
+        } else {
+          answer = "HTTP/1.1 404 Not Found\r\n\r\n";
+        }
+
+        clientSocket.getOutputStream().write(answer.getBytes());
+        
+
+
+         
           
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
